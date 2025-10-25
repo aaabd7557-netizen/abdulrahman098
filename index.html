@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الكيمياء التفاعلي</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        h2 {
+            margin: 15px 0;
+            color: #ffcc00;
+        }
+        
+        .screen {
+            display: none;
+        }
+        
+        .active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-group {
+            margin: 20px 0;
+            text-align: right;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+        }
+        
+        button {
+            background-color: #ffcc00;
+            color: #1e3c72;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background-color: #ffd633;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .question-container {
+            text-align: right;
+            margin: 20px 0;
+        }
+        
+        .question-text {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        
+        .option:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+        }
+        
+        .option.selected {
+            background-color: rgba(255, 204, 0, 0.3);
+            border-color: #ffcc00;
+        }
+        
+        .option.correct {
+            background-color: rgba(76, 175, 80, 0.4);
+            border-color: #4CAF50;
+        }
+        
+        .option.wrong {
+            background-color: rgba(244, 67, 54, 0.4);
+            border-color: #F44336;
+        }
+        
+        .timer {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+            color: #ffcc00;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: #ffcc00;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .alert {
+            background-color: rgba(244, 67, 54, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .success {
+            background-color: rgba(76, 175, 80, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .result-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            text-align: right;
+        }
+        
+        .correct-answer {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        .wrong-answer {
+            color: #F44336;
+            font-weight: bold;
+        }
+        
+        .score {
+            font-size: 2rem;
+            margin: 20px 0;
+            color: #ffcc00;
+        }
+        
+        .summary {
+            text-align: right;
+            margin: 20px 0;
+        }
+        
+        .unit-title {
+            color: #ffcc00;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- شاشة البداية -->
+        <div id="start-screen" class="screen active">
+            <h1>اختبار الكيمياء التفاعلي</h1>
+            <h2>الوحدة: التركيب الذري والنشاط الإشعاعي</h2>
+            
+            <div class="form-group">
+                <label for="student-name">اسم الطالب:</label>
+                <input type="text" id="student-name" placeholder="أدخل اسمك الكامل">
+            </div>
+            
+            <div class="form-group">
+                <label for="student-class">الشعبة:</label>
+                <select id="student-class">
+                    <option value="">اختر الشعبة</option>
+                    <option value="1">الشعبة 1</option>
+                    <option value="2">الشعبة 2</option>
+                    <option value="3">الشعبة 3</option>
+                    <option value="4">الشعبة 4</option>
+                    <option value="5">الشعبة 5</option>
+                    <option value="6">الشعبة 6</option>
+                    <option value="7">الشعبة 7</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <p>مدة الاختبار: <strong>50 دقيقة</strong></p>
+                <p>عدد الأسئلة: <strong>44 سؤال</strong></p>
+                <p>سيتم احتساب النقاط بناءً على الإجابات الصحيحة</p>
+            </div>
+            
+            <button id="start-btn">ابدأ الاختبار</button>
+        </div>
+        
+        <!-- شاشة الأسئلة -->
+        <div id="quiz-screen" class="screen">
+            <h1>اختبار الكيمياء</h1>
+            <div class="timer" id="timer">50:00</div>
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+            
+            <div id="question-container" class="question-container">
+                <!-- سيتم تعبئة الأسئلة هنا ديناميكيًا -->
+            </div>
+            
+            <div id="alert-container"></div>
+            
+            <div class="navigation">
+                <button id="prev-btn">السابق</button>
+                <button id="next-btn">التالي</button>
+                <button id="submit-btn" style="display: none;">إنهاء الاختبار</button>
+            </div>
+        </div>
+        
+        <!-- شاشة النتائج -->
+        <div id="result-screen" class="screen">
+            <h1>نتيجة الاختبار</h1>
+            <div class="score" id="final-score">0/44</div>
+            
+            <div class="summary">
+                <p id="student-info"></p>
+                <p id="time-taken"></p>
+                <p id="correct-answers"></p>
+                <p id="percentage"></p>
+            </div>
+            
+            <div id="results-container">
+                <!-- سيتم تعبئة النتائج التفصيلية هنا -->
+            </div>
+            
+            <button id="restart-btn">إعادة الاختبار</button>
+        </div>
+    </div>
+
+    <script>
+        // بيانات الأسئلة كاملة
+        const questions = [
+            {
+                unit: "الوحدة الأولى: الأفكار القديمة للمادة",
+                question: "من أول من قال إن المادة مكوّنة من ذرات صغيرة غير قابلة للانقسام؟",
+                options: ["أ) أرسطو", "ب) ديموقريطس", "ج) دالتون"],
+                correct: 1
+            },
+            {
+                unit: "الوحدة الأولى: الأفكار القديمة للمادة",
+                question: "العالم الذي اعتقد أن المادة تتكون من أربع عناصر أساسية هو:",
+                options: ["أ) أرسطو", "ب) طومسون", "ج) دالتون"],
+                correct: 0
+            },
+            {
+                unit: "الوحدة الأولى: الأفكار القديمة للمادة",
+                question: "أي عالم وضع النظرية الذرية الحديثة؟",
+                options: ["أ) دالتون", "ب) رذرفورد", "ج) بور"],
+                correct: 0
+            },
+            {
+                unit: "الوحدة الأولى: الأفكار القديمة للمادة",
+                question: "ينص قانون النسب الثابتة على أن:",
+                options: ["أ) العناصر تتحد بنسبة كتلية ثابتة", "ب) العناصر تتغير نسبتها حسب الظروف", "ج) النسبة تختلف مع درجة الحرارة."],
+                correct: 0
+            },
+            {
+                unit: "الوحدة الأولى: الأفكار القديمة للمادة",
+                question: "فسّر العلاقة بين مفهوم الذرة عند ديموقريطس وقانون حفظ الكتلة عند لافوازييه.",
+                options: ["أ) كلاهما يصف شكل الذرة فقط.", "ب) كلاهما يفسر أن المادة تتكون من أجزاء صغيرة لا تُرى.", "ج) كلاهما يوضح أن المادة لا تُفنى ولا تُستحدث بل تتحول من شكل لآخر"],
+                correct: 2
+            },
+            {
+                unit: "الوحدة الثانية: تعريف الذرة",
+                question: "أي جهاز يستخدم لرؤية الذرات بشكل مباشر؟",
+                options: ["أ) المجهر الضوئي", "ب) مجهر النفقي الماسح (STM)", "ج) المجهر الإلكتروني"],
+                correct: 1
+            },
+            {
+                unit: "الوحدة الثانية: تعريف الذرة",
+                question: "الإلكترون اكتشفه العالم:",
+                options: ["أ) رذرفورد", "ب) طومسون", "ج) دالتون"],
+                correct: 1
+            },
+            {
+                unit: "الوحدة الثانية: تعريف الذرة",
+                question: "اكتُشف الإلكترون من خلال:",
+                options: ["أ) تجربة رذرفورد", "ب) أنبوب أشعة المهبط", "ج) تجربة بور"],
+                correct: 1
+            },
+            {
+                unit: "الوحدة الثانية: تعريف الذرة",
+                question: "شحنة الإلكترون هي:",
+                options: ["أ) موجبة", "ب) سالبة", "ج) متعادلة"],
+                correct: 1
+            },
+            {
+                unit: "الوحدة الثانية: تعريف الذرة",
+                question: "كتلة الإلكترون بالنسبة للبروتون تعتبر:",
+                options: ["أ) متساوية", "ب) أصغر بكثير", "ج) أكبر"],
+                correct: 1
+            },
+            {
+                unit: "الوحدة الثالثة: تركيب الذرة",
+                question: "أي تجربة أثبتت أن للذرة نواة صغيرة وكثيفة؟",
+                options: ["أ) تجربة أشعة الكاثود", "ب) تجربة رذرفورد", "ج) تجربة بور"],
+                correct: 1
+            },
+            {
+                unit: "الوحدة الثالثة: تركيب الذرة",
+                question: "البروتون يحمل شحنة:",
+                options: ["أ) موجبة", "ب) سالبة", "ج) متعادلة"],
+                correct: 0
+            },
+            {
+                unit: "الوحدة الثالثة: تركيب الذرة",
+                question: "النيوترون يختلف عن البروتون بأنه:",
+                options: ["أ) له شحنة سالبة", "ب) متعادل", "ج) موجب"],
+                correct: 1
+            },
+            {
+                unit: "الوحدة الثالثة: تركيب الذرة",
+                question: "العدد الذري يساوي:",
+                options: ["أ) عدد البروتونات", "ب) عدد البروتونات + النيوترونات", "ج) عدد الإلكترونات فقط"],
+                correct: 0
+            },
+            {
+                unit: "الوحدة الثالثة: تركيب الذرة",
+                question: "الجسيمات المسؤولة عن التفاعلات الكيميائية هي:",
+                options: ["أ) البروتونات", "ب) الإلكترونات", "ج) النيوترونات"],
+                correct: 1
+            },
+            {
+                unit: "الوحدة الثالثة: تركيب الذرة",
+                question: "النواة تحتوي على:",
+                options: ["أ) بروتونات ونيوترونات", "ب) إلكترونات فقط", "ج) بروتون + كتلة"],
+                correct: 0
+            },
+            {
+                unit: "الوحدة الثالثة: تركيب الذرة",
+                question: "من العالم الذي اقترح وجود نواة صغيرة في الذرة؟",
+                options: ["أ) بور", "ب) رذرفورد", "ج) طومسون"],
+                correct: 1
+            },
+            {
+                unit: "الوحدة الثالثة: تركيب الذرة",
+                question: "وحدة قياس الكتل الذرية هي:",
+                options: ["أ) غرام", "ب) وحدة الكتل الذرية (amu)", "ج) مول"],
+                correct: 1
+            },
+            {
+                unit: "الوحدة الثالثة: تركيب الذرة",
+                question: "العدد الكتلي يساوي:",
+                options: ["أ) عدد البروتونات", "ب) عدد البروتونات + النيوترونات", "ج) عدد الإلكترونات"],
+                correct: 1
+            },
+            {
+                unit: "الوحدة الثالثة: تركيب الذرة",
+                question: "أيّ مما يلي يربط بين نموذج طومسون ونموذج رذرفورد؟",
+                options: ["أ) كلاهما أثبت أن الذرة مصمتة.", "ب) كلاهما أوضح وجود إلكترونات في الذرة.", "ج) كلاهما أثبت أن شحنة النواة موجبة وأنها صغيرة الحجم"],
+                correct: 1
+            },
+            {
+                unit: "الوحدة الرابعة: كيف تختلف الذرات؟",
+                question: "النظائر هي ذرات للعنصر نفسه تختلف في:",
+                options: ["أ) عدد البروتونات", "ب) عدد النيوترونات", "ج) العدد الذري"],
+                correct: 1
+            },
+            {
+                unit: "الوحدة الرابعة: كيف تختلف الذرات؟",
+                question: "أي مما يلي يعد نظيرًا للكربون؟",
+                options: ["أ) ¹²C", "ب) ¹⁶O", "ج) ²H"],
+                correct: 0
+            },
+            {
+                unit: "الوحدة الرابعة: كيف تختلف الذرات؟",
+                question: "إذا كان لعنصر 11 بروتون و12 نيوترون فإن العدد الكتلي =",
+                options: ["أ) 11", "ب) 23", "ج) 22"],
+                correct: 1
+            },
+            {
+                unit: "الوحدة الرابعة: كيف تختلف الذرات؟",
+                question: "النظائر تتشابه في:",
+                options: ["أ) العدد الذري", "ب) عدد النيوترونات", "ج) العدد الكتلي"],
+                correct: 0
+            },
+            {
+                unit: "الوحدة الرابعة: كيف تختلف الذرات؟",
+                question: "النواة المستقرة هي التي:",
+                options: ["أ) تحتوي على بروتونات فقط", "ب) فيها توازن بين النيوترونات والبروتونات", "ج) لا تحتوي نيوترونات"],
+                correct: 1
+            },
+            {
+                unit: "الوحدة الرابعة: كيف تختلف الذرات؟",
+                question: "العامل الأهم في استقرار النواة هو:",
+                options: ["أ) نسبة النيوترونات للبروتونات", "ب) نسبة الإلكترونات للبروتونات", "ج) نسبة الحجم للكتلة"],
+                correct: 0
+            },
+            {
+                unit: "الوحدة الرابعة: كيف تختلف الذرات؟",
+                question: "إذا كانت النواة غير مستقرة فإنها:",
+                options: ["أ) تبقى ثابتة", "ب) تتحلل إشعاعياً", "ج) تختفي"],
+                correct: 1
+            },
+            {
+                unit: "الوحدة الرابعة: كيف تختلف الذرات؟",
+                question: "عندما يكون للعنصر نفسه نظائر متعددة، فإن هذا يعني:",
+                options: ["أ) تختلف في عدد البروتونات فقط.", "ب) تتفق في العدد الذري وتختلف في عدد الكتلة.", "ج) تختلف في عدد الإلكترونات فقط"],
+                correct: 1
+            },
+            {
+                unit: "الوحدة الخامسة: الأدوية غير المستقرة والتحلل",
+                question: "جسيم ألفا يتكون من:",
+                options: ["أ) بروتونين ونيوترونين", "ب) إلكترونين", "ج) بروتون واحد"],
+                correct: 0
+            },
+            {
+                unit: "الوحدة الخامسة: الأدوية غير المستقرة والتحلل",
+                question: "جسيم بيتا هو:",
+                options: ["أ) إلكترون", "ب) بروتون", "ج) نيوترون"],
+                correct: 0
+            },
+            {
+                unit: "الوحدة الخامسة: الأدوية غير المستقرة والتحلل",
+                question: "أشعة غاما تعتبر:",
+                options: ["أ) طاقة إشعاعية عالية", "ب) جسيم مادي", "ج) إلكترون"],
+                correct: 0
+            },
+            {
+                unit: "الوحدة الخامسة: الأدوية غير المستقرة والتحلل",
+                question: "أي تحلل يغير العدد الذري فقط؟",
+                options: ["أ) تحلل بيتا", "ب) تحلل ألفا", "ج) أشعة غاما"],
+                correct: 0
+            },
+            {
+                unit: "الوحدة الخامسة: الأدوية غير المستقرة والتحلل",
+                question: "أي تحلل لا يغير العدد الكتلي؟",
+                options: ["أ) تحلل ألفا", "ب) تحلل بيتا", "ج) انشطار نووي"],
+                correct: 1
+            },
+            {
+                unit: "الوحدة الخامسة: الأدوية غير المستقرة والتحلل",
+                question: "من استخدامات الإشعاع النافعة:",
+                options: ["أ) تصوير العظام", "ب) إذابة الصخور", "ج) تكوين"],
+                correct: 0
+            },
+            {
+                unit: "الوحدة الخامسة: الأدوية غير المستقرة والتحلل",
+                question: "النوى غير المستقرة تميل إلى:",
+                options: ["أ) الثبات", "ب) إطلاق إشعاع", "ج) زيادة الكتلة"],
+                correct: 1
+            },
+            {
+                unit: "الوحدة الخامسة: الأدوية غير المستقرة والتحلل",
+                question: "وحدة قياس النشاط الإشعاعي هي:",
+                options: ["أ) كوري (Ci)", "ب) جول", "ج) مول"],
+                correct: 0
+            },
+            {
+                unit: "الوحدة الخامسة: الأدوية غير المستقرة والتحلل",
+                question: "أي العبارات الآتية تصف بدقة العلاقة بين التحلل الإشعاعي والاستقرار النووي؟",
+                options: ["أ) الأيون المستقر لا يتحلل إشعاعيًا.", "ب) الأيون المستقر يصدر جسيمات بيتا دائمًا.", "ج) الأيون غير المستقر يحتوي على نواة خفيفة فقط."],
+                correct: 0
+            },
+            {
+                unit: "الوحدة الخامسة: الأدوية غير المستقرة والتحلل",
+                question: "أي مما يلي يميز الأيون المستقر؟",
+                options: ["أ) عدد البروتونات أكبر من الإلكترونات.", "ب) عدد النيوترونات والإلكترونات متساوي دائمًا.", "ج) مستوى الطاقة الأخير مكتمل بالإلكترونات."],
+                correct: 2
+            },
+            {
+                unit: "أسئلة دمج والتحليل",
+                question: "إذا فقد العنصر إلكتروناً فإنه يصبح:",
+                options: ["أ) أيون موجب", "ب) أيون سالب", "ج) متعادل"],
+                correct: 0
+            },
+            {
+                unit: "أسئلة دمج والتحليل",
+                question: "إذا اكتسب العنصر إلكتروناً فإنه يصبح:",
+                options: ["أ) أيون موجب", "ب) أيون سالب", "ج) متعادل"],
+                correct: 1
+            },
+            {
+                unit: "أسئلة دمج والتحليل",
+                question: "أي نوع إشعاع له أعلى قدرة على الاختراق؟",
+                options: ["أ) جسيم ألفا", "ب) جسيم بيتا", "ج) أشعة غاما"],
+                correct: 2
+            },
+            {
+                unit: "أسئلة دمج والتحليل",
+                question: "إذا كانت نسبة النيوترونات للبروتونات غير متوازنة فإن النواة:",
+                options: ["أ) مستقرة", "ب) غير مستقرة", "ج) تختفي"],
+                correct: 1
+            },
+            {
+                unit: "أسئلة دمج والتحليل",
+                question: "قارن بين تفاعل كيميائي وتفاعل نووي من حيث حفظ الكتلة والشحنة.",
+                options: ["أ) كلاهما لا يحفظ الكتلة.", "ب) التفاعل الكيميائي يحفظ الكتلة بينما النووي قد يفقدها.", "ج) التفاعلان متماثلان في التغيرات"],
+                correct: 1
+            },
+            {
+                unit: "أسئلة دمج والتحليل",
+                question: "إذا كان عنصران لهما نفس عدد البروتونات ولكن يختلفان في عدد النيوترونات، فماذا يعني ذلك؟",
+                options: ["أ) هما عنصران مختلفان.", "ب) هما نظيران.", "ج) هما مركبان"],
+                correct: 1
+            },
+            {
+                unit: "أسئلة دمج والتحليل",
+                question: "في تجربة رذرفورد، تم ملاحظة ارتداد بعض جسيمات ألفا، ماذا نستنتج من ذلك؟",
+                options: ["أ) الإلكترونات موزعة عشوائيًا.", "ب) النواة صغيرة وموجبة الكتلة.", "ج) الذرة مصمتة تمامًا"],
+                correct: 1
+            }
+        ];
+
+        // متغيرات التطبيق
+        let currentQuestion = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let score = 0;
+        let timeLeft = 50 * 60; // 50 دقيقة بالثواني
+        let timerInterval;
+        let startTime;
+
+        // عناصر DOM
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const startBtn = document.getElementById('start-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const questionContainer = document.getElementById('question-container');
+        const alertContainer = document.getElementById('alert-container');
+        const timerElement = document.getElementById('timer');
+        const progressElement = document.getElementById('progress');
+        const finalScoreElement = document.getElementById('final-score');
+        const studentInfoElement = document.getElementById('student-info');
+        const timeTakenElement = document.getElementById('time-taken');
+        const correctAnswersElement = document.getElementById('correct-answers');
+        const percentageElement = document.getElementById('percentage');
+        const resultsContainer = document.getElementById('results-container');
+
+        // بدء الاختبار
+        startBtn.addEventListener('click', function() {
+            const studentName = document.getElementById('student-name').value;
+            const studentClass = document.getElementById('student-class').value;
+            
+            if (!studentName || !studentClass) {
+                alert('يرجى إدخال اسم الطالب واختيار الشعبة');
+                return;
+            }
+            
+            startScreen.classList.remove('active');
+            quizScreen.classList.add('active');
+            
+            startTime = new Date();
+            startTimer();
+            showQuestion();
+        });
+
+        // عرض السؤال الحالي
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            
+            let html = `
+                <div class="unit-title">${question.unit}</div>
+                <div class="question-text">${currentQuestion + 1}. ${question.question}</div>
+                <div class="options-container">
+            `;
+            
+            question.options.forEach((option, index) => {
+                const isSelected = userAnswers[currentQuestion] === index;
+                let className = 'option';
+                if (isSelected) className += ' selected';
+                
+                html += <div class="${className}" data-index="${index}">${option}</div>;
+            });
+            
+            html += </div>;
+            questionContainer.innerHTML = html;
+            
+            // إضافة مستمعي الأحداث للخيارات
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', function() {
+                    if (userAnswers[currentQuestion] === null) {
+                        selectOption(parseInt(this.dataset.index));
+                    }
+                });
+            });
+            
+            // تحديث شريط التقدم
+            progressElement.style.width = ${((currentQuestion + 1) / questions.length) * 100}%;
+            
+            // تحديث أزرار التنقل
+            prevBtn.disabled = currentQuestion === 0;
+            nextBtn.disabled = userAnswers[currentQuestion] === null;
+            
+            if (currentQuestion === questions.length - 1) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'inline-block';
+                submitBtn.disabled = userAnswers[currentQuestion] === null;
+            } else {
+                nextBtn.style.display = 'inline-block';
+                submitBtn.style.display = 'none';
+            }
+            
+            // إخفاء التنبيهات
+            alertContainer.innerHTML = '';
+        }
+
+        // اختيار إجابة
+        function selectOption(optionIndex) {
+            userAnswers[currentQuestion] = optionIndex;
+            
+            // تحديث المظهر
+            document.querySelectorAll('.option').forEach((opt, idx) => {
+                opt.classList.remove('selected');
+                if (idx === optionIndex) {
+                    opt.classList.add('selected');
+                }
+            });
+            
+            // التحقق من الإجابة
+            const isCorrect = optionIndex === questions[currentQuestion].correct;
+            
+            if (isCorrect) {
+                // تشغيل صوت النجاح
+                playCorrectSound();
+                score++;
+            } else {
+                // تشغيل صوت الخطأ
+                playWrongSound();
+                
+                // عرض التنبيه بالإجابة الصحيحة
+                const correctOption = questions[currentQuestion].options[questions[currentQuestion].correct];
+                alertContainer.innerHTML = `
+                    <div class="alert">
+                        <strong>إجابة خاطئة!</strong><br>
+                        الإجابة الصحيحة هي: <span class="correct-answer">${correctOption}</span>
+                    </div>
+                `;
+                
+                // إظهار الإجابة الصحيحة
+                document.querySelectorAll('.option').forEach((opt, idx) => {
+                    if (idx === questions[currentQuestion].correct) {
+                        opt.classList.add('correct');
+                    }
+                    if (idx === optionIndex && idx !== questions[currentQuestion].correct) {
+                        opt.classList.add('wrong');
+                    }
+                });
+            }
+            
+            // تحديث أزرار التنقل
+            nextBtn.disabled = false;
+            if (currentQuestion === questions.length - 1) {
+                submitBtn.disabled = false;
+            }
+        }
+
+        // التنقل بين الأسئلة
+        prevBtn.addEventListener('click', function() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion();
+            }
+        });
+
+        nextBtn.addEventListener('click', function() {
+            if (currentQuestion < questions.length - 1 && userAnswers[currentQuestion] !== null) {
+                currentQuestion++;
+                showQuestion();
+            }
+        });
+
+        // إنهاء الاختبار
+        submitBtn.addEventListener('click', function() {
+            clearInterval(timerInterval);
+            showResults();
+        });
+
+        // عرض النتائج
+        function showResults() {
+            quizScreen.classList.remove('active');
+            resultScreen.classList.add('active');
+            
+            const studentName = document.getElementById('student-name').value;
+            const studentClass = document.getElementById('student-class').value;
+            const endTime = new Date();
+            const timeTaken = Math.floor((endTime - startTime) / 1000);
+            const minutes = Math.floor(timeTaken / 60);
+            const seconds = timeTaken % 60;
+            
+            finalScoreElement.textContent = ${score}/${questions.length};
+            studentInfoElement.textContent = الطالب: ${studentName} - الشعبة: ${studentClass};
+            timeTakenElement.textContent = الوقت المستغرق: ${minutes} دقيقة و ${seconds} ثانية;
+            correctAnswersElement.textContent = عدد الإجابات الصحيحة: ${score};
+            percentageElement.textContent = النسبة المئوية: ${((score / questions.length) * 100).toFixed(2)}%;
+            
+            // عرض النتائج التفصيلية
+            let resultsHtml = '<h2>التقرير التفصيلي</h2>';
+            
+            questions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.correct;
+                const userAnswerText = userAnswer !== null ? question.options[userAnswer] : "لم يتم الإجابة";
+                const correctAnswerText = question.options[question.correct];
+                
+                resultsHtml += `
+                    <div class="result-item">
+                        <p><strong>س ${index + 1}:</strong> ${question.question}</p>
+                        <p>إجابتك: <span class="${isCorrect ? 'correct-answer' : 'wrong-answer'}">${userAnswerText}</span></p>
+                        <p>الإجابة الصحيحة: <span class="correct-answer">${correctAnswerText}</span></p>
+                        <p>${isCorrect ? '✓ إجابة صحيحة' : '✗ إجابة خاطئة'}</p>
+                    </div>
+                `;
+            });
+            
+            resultsContainer.innerHTML = resultsHtml;
+        }
+
+        // إعادة الاختبار
+        restartBtn.addEventListener('click', function() {
+            // إعادة تعيين جميع المتغيرات
+            currentQuestion = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            score = 0;
+            timeLeft = 50 * 60;
+            
+            // إعادة تعيين الشاشات
+            resultScreen.classList.remove('active');
+            startScreen.classList.add('active');
+            
+            // إعادة تعيين النماذج
+            document.getElementById('student-name').value = '';
+            document.getElementById('student-class').value = '';
+        });
+
+        // المؤقت
+        function startTimer() {
+            updateTimerDisplay();
+            
+            timerInterval = setInterval(function() {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    showResults();
+                    return;
+                }
+            }, 1000);
+        }
+        
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')};
+        }
+
+        // وظائف الأصوات
+        function playCorrectSound() {
+            // صوت بسيط للإجابة الصحيحة
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.value = 800;
+                gainNode.gain.value = 0.3;
+                
+                oscillator.start();
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            } catch (e) {
+                console.log("لا يمكن تشغيل الصوت: ", e);
+            }
+        }
+        
+        function playWrongSound() {
+            // صوت بسيط للإجابة الخاطئة
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.value = 200;
+                gainNode.gain.value = 0.3;
+                
+                oscillator.start();
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.7);
+                oscillator.stop(audioContext.currentTime + 0.7);
+            } catch (e) {
+                console.log("لا يمكن تشغيل الصوت: ", e);
+            }
+        }
+
+        // تهيئة الأزرار عند التحميل
+        window.addEventListener('DOMContentLoaded', function() {
+            prevBtn.disabled = true;
+            nextBtn.disabled = true;
+        });
+    </script>
+</body>
+</html>
